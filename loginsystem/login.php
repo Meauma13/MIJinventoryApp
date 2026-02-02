@@ -3,23 +3,43 @@ include_once('includes/config.php');
 // Code for login 
 if(isset($_POST['login']))
 {
-$password=$_POST['password'];
-$dec_password=$password;
-$useremail=$_POST['uemail'];
-$ret= mysqli_query($con,"SELECT id,fname FROM users WHERE email='$useremail' and password='$dec_password'");
-$num=mysqli_fetch_array($ret);
-if($num>0)
-{
+    // Secure input
+    $useremail = mysqli_real_escape_string($con, trim($_POST['uemail']));
+    $password = $_POST['password'];
 
-$_SESSION['id']=$num['id'];
-$_SESSION['name']=$num['fname'];
-header("location:welcome.php");
+    // First, try to authenticate against tbladmin (admin/ceo/staff)
+    $md5pass = md5($password);
+    $admin_q = mysqli_query($con, "SELECT ID, AdminName, role FROM tbladmin WHERE (Email='".$useremail."' OR UserName='".$useremail."') AND (Password='".$md5pass."' OR Password='".$password."') LIMIT 1");
+    if($admin_q && mysqli_num_rows($admin_q) > 0){
+        $admin = mysqli_fetch_assoc($admin_q);
+        // set admin session keys used by admin area
+        session_regenerate_id(true);
+        $_SESSION['imsaid'] = $admin['ID'];
+        $_SESSION['role'] = $admin['role'];
+        if(strtolower($admin['role']) == 'ceo'){
+            header('location:../admin/ceo-dashboard.php');
+            exit;
+        } else {
+            header('location:../admin/dashboard.php');
+            exit;
+        }
+    }
 
-}
-else
-{
-echo "<script>alert('Invalid username or password');</script>";
-}
+    // Fallback: authenticate against legacy `users` table (site users)
+    $safe_pw = mysqli_real_escape_string($con, $password);
+    $ret = mysqli_query($con, "SELECT id,fname FROM users WHERE email='".$useremail."' AND password='".$safe_pw."' LIMIT 1");
+    if($ret && mysqli_num_rows($ret) > 0){
+        $num = mysqli_fetch_assoc($ret);
+        session_regenerate_id(true);
+        $_SESSION['id'] = $num['id'];
+        $_SESSION['name'] = $num['fname'];
+        header("location:welcome.php");
+        exit;
+    }
+
+    // No match
+    echo "<script>alert('Invalid username or password');</script>";
+
 }
 ?>
 
