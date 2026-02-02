@@ -1,0 +1,16 @@
+*.log
+.env
+node_modules/
+vendor/
+.DS_Store
+Thumbs.db
+# Database files if any
+*.sql
+# PHP error logs
+error_log
+# IDE files
+.vscode/
+.idea/
+# OS files
+*.swp
+*.swo
