@@ -487,11 +487,11 @@ li.w3pages .dropdown-menu > li > a:hover{
 /*-- banner --*/
 .banner{
 	background:url(../images/b1.jpg) no-repeat center 0px; 
-	background-size:cover;
-	-webkit-background-size:cover;
-	-moz-background-size:cover;
-	-o-background-size:cover;
-	-ms-background-size:cover;
+	background-size:100% auto;
+	-webkit-background-size:100% auto;
+	-moz-background-size:100% auto;
+	-o-background-size:100% auto;
+	-ms-background-size:100% auto;
 	min-height:700px;
 } 
 .banner.banner10{
