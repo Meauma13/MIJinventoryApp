@@ -19,6 +19,15 @@ if($row>0)
 
 if($msg)
 {
+    // Also create a corresponding entry in tbladmin so this user can login via the admin flow
+    // Note: assign role 'user' by default. Adjust as needed for admin/ceo roles.
+    $admin_name = mysqli_real_escape_string($con, $fname . ' ' . $lname);
+    $admin_username = mysqli_real_escape_string($con, $email);
+    $admin_mobile = mysqli_real_escape_string($con, $contact);
+    $admin_email = mysqli_real_escape_string($con, $email);
+    $admin_password = mysqli_real_escape_string($con, $password);
+    mysqli_query($con, "INSERT INTO tbladmin (AdminName, UserName, MobileNumber, Email, Password, role) VALUES ('".$admin_name."', '".$admin_username."', '".$admin_mobile."', '".$admin_email."', '".$admin_password."', 'user')");
+
     echo "<script>alert('Registered successfully');</script>";
     echo "<script type='text/javascript'> document.location = 'login.php'; </script>";
 }
