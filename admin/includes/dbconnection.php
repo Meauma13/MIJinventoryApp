@@ -6,6 +6,4 @@ $db = getenv('DB_NAME') ?: "inventorydb";
 
 $con=mysqli_connect($host, $user, $pass, $db);
 echo "Connection Fail".mysqli_connect_error();
-}
-
   ?>
