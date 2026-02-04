@@ -11,12 +11,13 @@ if (strlen($_SESSION['imsaid']==0)) {
     $scategory=$_POST['subcategory'];
     $status=$_POST['status'];
      
-    $query=mysqli_query($con, "insert into tblsubcategory(CatID,SubCategoryname,Status) value('$catid','$scategory','$status')");
+    $query=mysqli_query($con, "insert into tblsubcategory(CategoryID,SubCategoryname,SubCategoryCode,Creationdate) value('$catid','$scategory','$status',NOW())");
     if ($query) {
     $last_id = mysqli_insert_id($con);
-    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblsubcategory', '$last_id')");
+    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblsubcategory', '$last_id')");
    
     echo '<script>alert("Sub Category has been created.")</script>';
+    echo "<script type='text/javascript'> document.location = 'add-subcategory.php'; </script>";
   }
   else
     {
@@ -56,19 +57,31 @@ if (strlen($_SESSION['imsaid']==0)) {
             <div class="control-group">
               <label class="control-label">Category Name :</label>
               <div class="controls">
-                <select type="text" class="span11" name="catid" id="catid" value="" required='true' />
+                <!-- <select type="text" class="span11" name="catid" id="catid" value="" required='true' />
                   <option value="">Choose Category</option>
                   <?php
-$ret=mysqli_query($con,"select * from tblcategory");
-$cnt=1;
-while ($row=mysqli_fetch_array($ret)) {
+// $ret=mysqli_query($con,"select * from tblcategory");
+// $cnt=1;
+// while ($row=mysqli_fetch_array($ret)) {
 
 ?>
-                  <option value="<?php  echo $row['ID'];?>"><?php  echo $row['CategoryName'];?></option>
+                  <option value="<?php  // echo $row['ID'];?>"><?php // echo $row['CategoryName'];?></option>
                   <?php 
-$cnt=$cnt+1;
-}?> 
-                </select>
+// $cnt=$cnt+1;
+//}?> 
+                </select> -->
+
+                <select name="catid" class="form-control" required>
+    <option value="">Select Category</option>
+    <?php 
+    $query = mysqli_query($con, "SELECT id, CategoryName FROM tblcategory");
+    while($row = mysqli_fetch_array($query)) {
+    ?>
+        <!-- The 'value' attribute is what gets sent to $_POST['catid'] -->
+        <option value="<?php echo $row['id'];?>"><?php echo $row['CategoryName'];?></option>
+    <?php } ?>
+</select>
+
               </div>
             </div>
             <div class="control-group">

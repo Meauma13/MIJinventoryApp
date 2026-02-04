@@ -16,6 +16,18 @@ CREATE TABLE tbladmin (
     role VARCHAR(50) DEFAULT 'admin'
 );
 
+-- Site users table (customers / staff signups)
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    fname VARCHAR(120),
+    lname VARCHAR(120),
+    username VARCHAR(120) UNIQUE,
+    email VARCHAR(200) UNIQUE,
+    password VARCHAR(255),
+    contactno VARCHAR(30),
+    posting_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Categories
 CREATE TABLE tblcategory (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -119,5 +131,5 @@ CREATE TABLE tblauditlog (
 
 -- Insert sample admin
 INSERT INTO tbladmin (AdminName, UserName, MobileNumber, Email, Password, role) VALUES
-('Admin User', 'admin', '1234567890', 'admin@example.com', 'admin123', 'admin'),
-('CEO User', 'ceo', '0987654321', 'ceo@example.com', 'ceo123', 'ceo');
+('Admin User', 'admin', '1234567890', 'admin@example.com', '0192023a7bbd73250516f069df18b500', 'admin'),
+('CEO User', 'ceo', '0987654321', 'ceo@example.com', '2e53a4bcf9cba6f96620e39f3a5f0d0a', 'ceo');

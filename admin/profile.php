@@ -8,17 +8,23 @@ if (strlen($_SESSION['imsaid']==0)) {
     if(isset($_POST['submit']))
   {
     $adminid=$_SESSION['imsaid'];
-    $aname=$_POST['adminname'];
-  $mobno=$_POST['contactnumber'];
-  
-     $query=mysqli_query($con, "update tbladmin set AdminName ='$aname', MobileNumber='$mobno' where ID='$adminid'");
+    $aname=mysqli_real_escape_string($con,$_POST['adminname']);
+  $mobno=mysqli_real_escape_string($con,$_POST['contactnumber']);
+  $username = mysqli_real_escape_string($con, trim($_POST['username']));
+
+    // Check username uniqueness (exclude current admin)
+    $check = mysqli_query($con, "SELECT ID FROM tbladmin WHERE UserName='$username' AND ID<>$adminid LIMIT 1");
+    if($check && mysqli_num_rows($check) > 0){
+        echo '<script>alert("Username already taken by another account.");</script>';
+    } else {
+     $query=mysqli_query($con, "update tbladmin set AdminName ='$aname', MobileNumber='$mobno', UserName='$username' where ID='$adminid'");
     if ($query) {
-    
     echo '<script>alert("Admin profile has been updated.")</script>';
   }
   else
     {
       echo '<script>alert("Something Went Wrong. Please try again")</script>';
+    }
     }
   }
   ?>
@@ -66,7 +72,7 @@ while ($row=mysqli_fetch_array($ret)) {
             <div class="control-group">
               <label class="control-label">User Name :</label>
               <div class="controls">
-                <input type="text" class="span11" name="username" id="username" value="<?php  echo $row['UserName'];?>" readonly="true" />
+                <input type="text" class="span11" name="username" id="username" value="<?php  echo $row['UserName'];?>" required />
               </div>
             </div>
             <div class="control-group">

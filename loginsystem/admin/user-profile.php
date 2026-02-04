@@ -46,6 +46,10 @@ while($result=mysqli_fetch_array($query))
                                        <td><?php echo $result['lname'];?></td>
                                    </tr>
                                    <tr>
+                                       <th>Username</th>
+                                       <td><?php echo isset($result['username']) ? $result['username'] : '';?></td>
+                                   </tr>
+                                   <tr>
                                        <th>Email</th>
                                        <td colspan="3"><?php echo $result['email'];?></td>
                                    </tr>

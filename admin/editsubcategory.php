@@ -40,10 +40,10 @@ if(isset($_POST['update']))
     $subcat=$_POST['subcat'];
     $status=$_POST['status'];
      
-    $query=mysqli_query($con, "update tblsubcategory set CatID  ='$catid', SubCategoryname='$subcat',Status='$status' where ID='$sid'");
+    $query=mysqli_query($con, "update tblsubcategory set Categoryid ='$catid', SubCategoryname='$subcat',SubcategoryCode='$status' where ID='$sid'");
     
     if ($query) {
-    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblsubcategory', '$sid')");
+      mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblsubcategory', '$sid')");
     echo '<script>alert("Sub Category has been updated.")</script>';
     header('location:manage-subcategory.php');
   }
@@ -100,7 +100,7 @@ echo "<script>
           <form method="post" class="form-horizontal">
            <?php
                      $sid=$_GET['scid'];
-$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as cid,tblsubcategory.SubCategoryname as subcat,tblsubcategory.Status from tblsubcategory inner join tblcategory on tblcategory.ID=tblsubcategory.CatID where tblsubcategory.ID='$sid'");
+$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as cid,tblsubcategory.SubCategoryname as subcat,tblsubcategory.SubcategoryCode as subcode from tblsubcategory inner join tblcategory on tblcategory.ID=tblsubcategory.CategoryId where tblsubcategory.ID='$sid'");
 
 while ($row=mysqli_fetch_array($ret)) {
 
@@ -128,7 +128,7 @@ while ($row=mysqli_fetch_array($ret)) {
             <div class="control-group">
               <label class="control-label">Status :</label>
               <div class="controls">
-                <?php  if($row['Status']=="1"){ ?>
+                <?php  if($row['subcode']=="1"){ ?>
                 <input type="checkbox"  name="status" id="status" value="1"  checked="true"/>
                 <?php } else { ?>
                   <input type="checkbox" value='1' name="status" id="status" />

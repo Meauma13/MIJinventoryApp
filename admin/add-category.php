@@ -10,12 +10,13 @@ if (strlen($_SESSION['imsaid']==0)) {
     $category=$_POST['category'];
     $status=$_POST['status'];
      
-    $query=mysqli_query($con, "insert into tblcategory(CategoryName,Status) value('$category','$status')");
+    $query=mysqli_query($con, "insert into tblcategory(CategoryCode,CategoryName,PostingDate) value('$status', '$category', NOW())");
     if ($query) {
     $last_id = mysqli_insert_id($con);
-    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblcategory', '$last_id')");
+    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblcategory', '$last_id')");
    
     echo '<script>alert("Category has been created.")</script>';
+    echo "<script type='text/javascript'> document.location = 'add-category.php'; </script>";
   }
   else
     {

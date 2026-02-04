@@ -4,7 +4,7 @@ include_once('includes/config.php');
 if(isset($_POST['login']))
 {
     // Secure input
-    $useremail = mysqli_real_escape_string($con, trim($_POST['uemail']));
+    $useremail = mysqli_real_escape_string($con, trim($_POST['uidentity']));
     $password = $_POST['password'];
 
     // First, try to authenticate against tbladmin (admin/ceo/staff)
@@ -26,8 +26,10 @@ if(isset($_POST['login']))
     }
 
     // Fallback: authenticate against legacy `users` table (site users)
+    // allow login by username (preferred) or email; check both plain and md5-stored passwords
     $safe_pw = mysqli_real_escape_string($con, $password);
-    $ret = mysqli_query($con, "SELECT id,fname FROM users WHERE email='".$useremail."' AND password='".$safe_pw."' LIMIT 1");
+    $md5_pw = md5($password);
+    $ret = mysqli_query($con, "SELECT id,fname FROM users WHERE (username='".$useremail."' OR email='".$useremail."') AND (password='".$safe_pw."' OR password='".$md5_pw."') LIMIT 1");
     if($ret && mysqli_num_rows($ret) > 0){
         $num = mysqli_fetch_assoc($ret);
         session_regenerate_id(true);
@@ -71,8 +73,10 @@ if(isset($_POST['login']))
                                         <form method="post">
                                             
 <div class="form-floating mb-3">
-<input class="form-control" name="uemail" type="email" placeholder="name@example.com" required/>
-<label for="inputEmail">Email address</label>
+</div>
+<div class="form-floating mb-3">
+<input class="form-control" name="uidentity" type="text" placeholder="Username" required/>
+<label for="inputEmail">Username</label>
 </div>
                                             
 

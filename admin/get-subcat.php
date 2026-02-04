@@ -6,14 +6,13 @@ if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
   } else{
 
- if(isset($_POST['catid'])){
- $cid=$_POST['catid'];
-
-  $query=mysqli_query($con,"select * from tblsubcategory where CatID='$cid' && Status='1'");
-    while($rw=mysqli_fetch_array($query))
-    {
-     ?>      
- <option value="<?php echo $rw['ID'];?>"><?php echo $rw['SubCategoryname'];?></option>
-                  
-
-<?php }}} ?>
+if(!empty($_POST["catid"])) {
+    $catid = $_POST["catid"];
+    // Always use prepared statements or at least escape your data
+    $query = mysqli_query($con, "SELECT * FROM tblsubcategory WHERE CategoryID = '$catid'");
+    
+    echo '<option value="">Select Sub Category</option>';
+    while($row = mysqli_fetch_array($query)) {
+        echo '<option value="'.$row['ID'].'">'.$row['Subcategoryname'].'</option>';
+    }
+}} ?>

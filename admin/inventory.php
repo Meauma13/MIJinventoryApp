@@ -1,18 +1,16 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
   } else{
 
-
-
   ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| View Products Inventory</title>
+<title>Inventory Management System || View Products Inventory</title>
 <?php include_once('includes/cs.php');?>
 </head>
 <body>
@@ -31,9 +29,6 @@ if (strlen($_SESSION['imsaid']==0)) {
     <div class="row-fluid">
       <div class="span12">
         
-       
-     
-        
         <div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>Products Inventory</h5>
@@ -45,9 +40,7 @@ if (strlen($_SESSION['imsaid']==0)) {
                   <th>S.NO</th>
                   <th>Product Name</th>
                   <th>Category Name</th>
-                   <th>SubCategory Name</th>
-                  <th>Brand Name</th>
-                  <th>Model Number</th>
+                  <th>SubCategory Name</th>
                   <th>Stock</th>
                   <th>Remaining Stock</th>
                   <th>Status</th>
@@ -55,7 +48,7 @@ if (strlen($_SESSION['imsaid']==0)) {
               </thead>
               <tbody>
                 <?php
-$ret=mysqli_query($con,"select tblcategory.CategoryName,tblsubcategory.SubCategoryname as subcat,tblproducts.ProductName,tblproducts.BrandName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.ModelNumber,tblproducts.Stock,sum(tblcart.ProductQty) as selledqty from tblproducts join tblcategory on tblcategory.ID=tblproducts.CatID join tblsubcategory on tblsubcategory.ID=tblproducts.SubcatID left join tblcart  on tblproducts.ID=tblcart.ProductId group by tblproducts.ProductName");
+$ret=mysqli_query($con,"select tblcategory.CategoryName,tblsubcategory.SubCategoryname as subcat,tblproducts.ProductName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,sum(tblcart.ProductQty) as selledqty from tblproducts join tblcategory on tblcategory.ID=tblproducts.CategoryID join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID left join tblcart on tblproducts.ID=tblcart.ProductId group by tblproducts.ProductName");
 $qty=$result['selledqty'];
 $num=mysqli_num_rows($ret);
 if($num>0){
@@ -68,8 +61,6 @@ $qty=$row['selledqty'];
                   <td><?php  echo $row['ProductName'];?></td>
                   <td><?php  echo $row['CategoryName'];?></td>
                   <td><?php  echo $row['subcat'];?></td>
-                  <td><?php  echo $row['BrandName'];?></td>
-                  <td><?php  echo $row['ModelNumber'];?></td>
                   <td><?php  echo $row['Stock'];?></td>
                    <td><?php  echo ($_SESSION['rqty']=$row['Stock']-$qty);?></td>
                   <?php if($row['Status']=="1"){ ?>

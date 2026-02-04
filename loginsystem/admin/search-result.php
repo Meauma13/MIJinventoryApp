@@ -41,8 +41,9 @@ Search Results</h1>
                                     <thead>
                                         <tr>
                                              <th>Sno.</th>
-                                  <th>First Name</th>
+                                  <th> First Name</th>
                                   <th> Last Name</th>
+                                  <th> Username</th>
                                   <th> Email Id</th>
                                   <th>Contact no.</th>
                                   <th>Reg. Date</th>
@@ -52,8 +53,9 @@ Search Results</h1>
                                     <tfoot>
                                         <tr>
                                              <th>Sno.</th>
-                                  <th>First Name</th>
+                                  <th> First Name</th>
                                   <th> Last Name</th>
+                                  <th> Username</th>
                                   <th> Email Id</th>
                                   <th>Contact no.</th>
                                   <th>Reg. Date</th>
@@ -63,7 +65,7 @@ Search Results</h1>
                                     <tbody>
 <?php 
 $searchkey=$_POST['searchkey'];
-$ret=mysqli_query($con,"select * from users where (fname like '%$searchkey%' || email like '%$searchkey%' || contactno like '%$searchkey%')");
+$ret=mysqli_query($con,"select * from users where (fname like '%$searchkey%' OR username like '%$searchkey%' OR email like '%$searchkey%' OR contactno like '%$searchkey%')");
                               $cnt=1;
                               while($row=mysqli_fetch_array($ret))
                               {?>
@@ -71,6 +73,7 @@ $ret=mysqli_query($con,"select * from users where (fname like '%$searchkey%' || 
                               <td><?php echo $cnt;?></td>
                                   <td><?php echo $row['fname'];?></td>
                                   <td><?php echo $row['lname'];?></td>
+                                  <td><?php echo isset($row['username'])? $row['username'] : '';?></td>
                                   <td><?php echo $row['email'];?></td>
                                   <td><?php echo $row['contactno'];?></td>  <td><?php echo $row['posting_date'];?></td>
                                   <td>

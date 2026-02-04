@@ -17,13 +17,13 @@
         <li><a href="manage-subcategory.php">Manage Sub Category</a></li>
       </ul>
     </li>
-    <li class="submenu"> <a href="#"><i class="icon icon-file"></i> <span>Brand</span></a>
+    <!-- <li class="submenu"> <a href="#"><i class="icon icon-file"></i> <span>Brand</span></a>
       <ul>
         <li><a href="add-brand.php">Add Brand</a></li>
         <li><a href="manage-brand.php">Manage Brand</a></li>
        
       </ul>
-    </li>
+    </li> -->
     
     <li class="submenu"> <a href="#"><i class="icon icon-info-sign"></i> <span>Product</span></a>
       <ul>

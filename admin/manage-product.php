@@ -5,14 +5,12 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
   } else{
-
-
-
   ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| Manage Products</title>
+<title>Inventory Management System || Manage Products</title>
 <?php include_once('includes/cs.php');?>
 </head>
 <body>
@@ -31,9 +29,6 @@ if (strlen($_SESSION['imsaid']==0)) {
     <div class="row-fluid">
       <div class="span12">
         
-       
-     
-        
         <div class="widget-box">
           <div class="widget-title"> <span class="icon"><i class="icon-th"></i></span>
             <h5>Manage Products</h5>
@@ -42,15 +37,14 @@ if (strlen($_SESSION['imsaid']==0)) {
             <table class="table table-bordered data-table">
               <thead>
                 <tr>
+
                   <th>S.NO</th>
                   <th>Product Name</th>
                   <th>Category Name</th>
-                   <th>SubCategory Name</th>
-                  <th>Brand Name</th>
-                  <th>Model Number</th>
-                  <th>Price</th>
-                  <th>Barcode</th>
+                  <th>SubCategory Name</th>
+                  <th>Selling Price</th>
                   <th>Stock</th>
+                  <th>Barcode</th>
                   <th>Status</th>
                   <th>Creation Date</th>
                   <th>Action</th>
@@ -59,29 +53,27 @@ if (strlen($_SESSION['imsaid']==0)) {
               </thead>
               <tbody>
                 <?php
-$ret=mysqli_query($con,"select tblcategory.CategoryName,tblsubcategory.SubCategoryname as subcat,tblproducts.ProductName,tblproducts.BrandName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.ModelNumber,tblproducts.Stock,tblproducts.Price,tblproducts.Barcode from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CatID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcatID");
+$ret=mysqli_query($con,"select ProductName, tblcategory.CategoryName,tblsubcategory.Subcategoryname,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,tblproducts.SellingPrice,tblproducts.Barcode from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID");
 
 $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
 
 ?>
                 <tr class="gradeX">
-                  <td><?php echo $cnt;?></td>
-                  <td><?php  echo $row['ProductName'];?></td>
-                  <td><?php  echo $row['CategoryName'];?></td>
-                  <td><?php  echo $row['subcat'];?></td>
-                  <td><?php  echo $row['BrandName'] ?: 'Not Applicable';?></td>
-                  <td><?php  echo $row['ModelNumber'];?></td>
-                  <td><?php  echo $row['Price'];?></td>
-                  <td><?php  echo $row['Barcode'] ? $row['Barcode'] : 'N/A';?></td>
-                  <td><?php  echo $row['Stock'];?></td>
+                  <td style="text-align: center;"><?php echo $cnt;?></td>
+                  <td style="text-align: center;"><?php  echo $row['ProductName'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['CategoryName'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['Subcategoryname'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['SellingPrice'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['Stock'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['Barcode'] ? $row['Barcode'] : 'N/A';?></td>
                   <?php if($row['Status']=="1"){ ?>
 
-                     <td><?php echo "Active"; ?></td>
-<?php } else { ?>                  <td><?php echo "Inactive"; ?>
+                     <td style="text-align: center;"><?php echo "Active"; ?></td>
+<?php } else { ?>                  <td style="text-align: center;"><?php echo "Inactive"; ?>
                   </td>
                   <?php } ?>
-                  <td><?php  echo $row['CreationDate'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['CreationDate'];?></td>
                   <td class="center"><a href="editproducts.php?editid=<?php echo $row['pid'];?>"><i class=" icon-edit"></i></a></td>
                 </tr>
                 <?php 

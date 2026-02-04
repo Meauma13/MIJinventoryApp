@@ -51,8 +51,9 @@ echo "<script>alert('Data deleted');</script>";
                                     <thead>
                                         <tr>
                                              <th>Sno.</th>
-                                  <th>First Name</th>
+                                  <th> First Name</th>
                                   <th> Last Name</th>
+                                  <th> Username</th>
                                   <th> Email Id</th>
                                   <th>Contact no.</th>
                                   <th>Reg. Date</th>
@@ -62,8 +63,9 @@ echo "<script>alert('Data deleted');</script>";
                                     <tfoot>
                                         <tr>
                                              <th>Sno.</th>
-                                  <th>First Name</th>
+                                  <th> First Name</th>
                                   <th> Last Name</th>
+                                  <th> Username</th>
                                   <th> Email Id</th>
                                   <th>Contact no.</th>
                                   <th>Reg. Date</th>
@@ -79,6 +81,7 @@ echo "<script>alert('Data deleted');</script>";
                               <td><?php echo $cnt;?></td>
                                   <td><?php echo $row['fname'];?></td>
                                   <td><?php echo $row['lname'];?></td>
+                                  <td><?php echo isset($row['username'])? $row['username'] : '';?></td>
                                   <td><?php echo $row['email'];?></td>
                                   <td><?php echo $row['contactno'];?></td>  <td><?php echo $row['posting_date'];?></td>
                                   <td>

@@ -9,7 +9,7 @@ if(isset($_POST['login']))
     $password=md5($_POST['password']);
     $query=mysqli_query($con,"select ID, Role from tbladmin where  UserName='$adminuser' && Password='$password' ");
     $ret=mysqli_fetch_array($query);
-    if($ret>0){
+    if($ret){
       $_SESSION['imsaid']=$ret['ID'];
       $_SESSION['role']=$ret['Role'];
       if($ret['Role'] == 'ceo'){
@@ -97,9 +97,10 @@ return true;
                     <span class="pull-right"><input type="submit" class="btn btn-success" name="login" value="Sign In"></span>
                 </div>
             </form>
-            <div>
-                <a style="margin-left: 20px;" href="../index.php" class="flip-link btn btn-info" id="to-recover"><i class="icon-home"></i>&nbsp;Back to Home</a>
-                <a style="margin-left: 142px;" href="..\loginsystem/signup.php" class="flip-link btn btn-success"><i class="icon-user"></i>&nbsp;Signup New Staff</a>
+
+            <div class="form-actions">
+                <span class="pull-left"><a href="../index.php" class="flip-link btn btn-info" id="to-recover"><i class="icon-home"></i>&nbsp;Back to Home</a></span>
+                <span class="pull-right"><a href="..\loginsystem/signup.php" class="flip-link btn btn-success"><i class="icon-user"></i>&nbsp;Signup New Staff</a></span>
             </div>
 
                 <br />

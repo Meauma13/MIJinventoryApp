@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -11,9 +11,9 @@ if (strlen($_SESSION['imsaid']==0)) {
     $eid = $_GET['editid'];
     $query = mysqli_query($con, "DELETE FROM tblproducts WHERE ID = '$eid'");
     if ($query) {
-      mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'DELETE', 'tblproducts', '$eid')");
+      mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'DELETE', 'tblproducts', '$eid')");
       echo '<script>alert("Product has been deleted.")</script>';
-      header('location:manage-product.php');
+      echo "<script>window.location.href='manage-product.php'</script>";
       exit;
     } else {
       echo '<script>alert("Something Went Wrong. Please try again.")</script>';
@@ -26,18 +26,17 @@ if (strlen($_SESSION['imsaid']==0)) {
     $pname=$_POST['pname'];
     $category=$_POST['category'];
     $subcategory=$_POST['subcategory'];
-    $bname=$_POST['bname'];
-    $modelno=$_POST['modelno'];
     $stock=$_POST['stock'];
-     $price=$_POST['price'];
+    $price=$_POST['price'];
     $status=$_POST['status'];
-    $barcode=$_POST['barcode'];
+
      
-    $query=mysqli_query($con, "update tblproducts set ProductName='$pname',CatID='$category',SubcatID='$subcategory',BrandName='$bname',ModelNumber='$modelno',Stock='$stock',Price='$price',Status='$status',Barcode='$barcode' where ID='$eid'");
+    $query=mysqli_query($con, "update tblproducts set ProductName='$pname',CategoryID='$category',SubcategoryID='$subcategory',Stock='$stock',SellingPrice='$price',Status='$status' where ID='$eid'");
     if ($query) {
-    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblproducts', '$eid')");
+    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblproducts', '$eid')");
    
     echo '<script>alert("Product has been updated.")</script>';
+    echo "<script>window.location.href='manage-product.php'</script>";
   }
   else
     {
@@ -64,7 +63,7 @@ echo "<script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| Update Products</title>
+<title>Inventory Management System || Update Products</title>
 <?php include_once('includes/cs.php');?>
 <script>
 function getSubCat(val) {
@@ -78,10 +77,7 @@ $("#subcategory").html(data);
 
   });
 
-
-}
-  
-  
+} 
   </script>
 </head>
 <body>
@@ -108,7 +104,7 @@ $("#subcategory").html(data);
           <form method="post" class="form-horizontal">
             <?php
             $eid=$_GET['editid'];
-$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as catid,tblsubcategory.SubCategoryname as subcat,tblsubcategory.ID as scatid,tblproducts.ID as pid,tblproducts.ProductName,tblproducts.BrandName,tblproducts.Status,tblproducts.Price,tblproducts.CreationDate,tblproducts.ModelNumber,tblproducts.Stock from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CatID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcatID where tblproducts.ID='$eid'");
+$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as catid,tblsubcategory.Subcategoryname as subcat,tblsubcategory.ID as scatid,tblproducts.ID as pid,tblproducts.ProductName,tblproducts.Status,tblproducts.SellingPrice,tblproducts.Stock from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID where tblproducts.ID='$eid'");
 
 $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
@@ -125,7 +121,7 @@ while ($row=mysqli_fetch_array($ret)) {
               <div class="controls">
                 <select type="text" class="span11" name="category" id="category" onChange="getSubCat(this.value)" value="" required='true' />
                    <option value="<?php echo $row['catid'];?>"><?php echo $row['catname'];?></option>
-                    <?php $query=mysqli_query($con,"select * from tblcategory where Status='1'");
+                    <?php $query=mysqli_query($con,"select * from tblcategory where CategoryCode='1'");
               while($rw=mysqli_fetch_array($query))
               {
               ?>      
@@ -142,26 +138,7 @@ while ($row=mysqli_fetch_array($ret)) {
                 </select>
               </div>
             </div>
-            <div class="control-group">
-              <label class="control-label">Brand Name: :</label>
-              <div class="controls">
-                <select type="text" class="span11" name="bname" id="bname" />
-                  <option value="Not Applicable">Not Applicable</option>
-                  <option value="<?php echo $row['BrandName'];?>"><?php echo $row['BrandName'] ?: 'Not Applicable';?></option>
-                  <?php $query1=mysqli_query($con,"select * from tblbrand where Status='1'");
-              while($row1=mysqli_fetch_array($query1))
-              {
-              ?>
-                  <option value="<?php echo $row1['BrandName'];?>"><?php echo $row1['BrandName'];?></option><?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Model Number :</label>
-              <div class="controls">
-                <input type="text" class="span11"  name="modelno" id="modelno" value="<?php echo $row['ModelNumber'];?>" required="true" maxlength="5"  />
-              </div>
-            </div>
+          
             <div class="control-group">
               <label class="control-label">Stock(units) :</label>
               <div class="controls">
@@ -171,13 +148,7 @@ while ($row=mysqli_fetch_array($ret)) {
             <div class="control-group">
               <label class="control-label">Price(perunits) :</label>
               <div class="controls">
-                <input type="text" class="span11" name="price" id="price" value="<?php echo $row['Price'];?>" required="true"/>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Barcode :</label>
-              <div class="controls">
-                <input type="text" class="span11" name="barcode" id="barcode" value="<?php echo $row['Barcode'];?>" placeholder="Enter Barcode" />
+                <input type="text" class="span11" name="price" id="price" value="<?php echo $row['SellingPrice'];?>" required="true"/>
               </div>
             </div>
             <div class="control-group">

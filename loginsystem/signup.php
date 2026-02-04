@@ -6,23 +6,30 @@ if(isset($_POST['submit']))
 {
     $fname=$_POST['fname'];
     $lname=$_POST['lname'];
+    $username = trim($_POST['username']);
     $email=$_POST['email'];
-    $password=$_POST['password'];
+    $password=md5($_POST['password']);
     $contact=$_POST['contact'];
-$sql=mysqli_query($con,"select id from users where email='$email'");
-$row=mysqli_num_rows($sql);
-if($row>0)
+// check email or username collisions
+$sql_e=mysqli_query($con,"select id from users where email='$email'");
+$sql_u=mysqli_query($con,"select id from users where username='$username'");
+$row_e=mysqli_num_rows($sql_e);
+$row_u=mysqli_num_rows($sql_u);
+if($row_e>0)
 {
     echo "<script>alert('Email id already exist with another account. Please try with other email id');</script>";
+} else if($row_u>0) {
+    echo "<script>alert('Username already exist. Please choose another username');</script>";
 } else{
-    $msg=mysqli_query($con,"insert into users(fname,lname,email,password,contactno) values('$fname','$lname','$email','$password','$contact')");
+    $msg=mysqli_query($con,"insert into users(fname,lname,username,email,password,contactno) values('$fname','$lname','$username','$email','$password','$contact')");
 
 if($msg)
 {
     // Also create a corresponding entry in tbladmin so this user can login via the admin flow
     // Note: assign role 'user' by default. Adjust as needed for admin/ceo roles.
+    // create corresponding tbladmin entry; use provided username so staff can login by username
     $admin_name = mysqli_real_escape_string($con, $fname . ' ' . $lname);
-    $admin_username = mysqli_real_escape_string($con, $email);
+    $admin_username = mysqli_real_escape_string($con, $username);
     $admin_mobile = mysqli_real_escape_string($con, $contact);
     $admin_email = mysqli_real_escape_string($con, $email);
     $admin_password = mysqli_real_escape_string($con, $password);
@@ -87,7 +94,11 @@ return true;
 </div>
 </div>
 </div>
-
+<div class="form-floating mb-3">
+<div class="form-floating mb-3">
+<input class="form-control" id="username" name="username" type="text" placeholder="Choose a username" required />
+<label for="inputUsername">Username</label>
+</div>
 
 <div class="form-floating mb-3">
 <input class="form-control" id="email" name="email" type="email" placeholder="phpgurukulteam@gmail.com" required />
@@ -96,7 +107,7 @@ return true;
  
 
 <div class="form-floating mb-3">
-<input class="form-control" id="contact" name="contact" type="text" placeholder="1234567890" required pattern="[0-9]{10}" title="10 numeric characters only"  maxlength="10" required />
+<input class="form-control" id="contact" name="contact" type="text" placeholder="1234567890" required pattern="[0-9]{11}" title="11 numeric characters only"  maxlength="11" required />
 <label for="inputcontact">Contact Number</label>
 </div>
         

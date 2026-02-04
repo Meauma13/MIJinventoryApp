@@ -1,10 +1,11 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['imsaid']==0)) {
-  header('location:logout.php');
-  } else{
+if (empty($_SESSION['imsaid'])) {
+   header('location:logout.php');
+} else{
   ?>
 
 <!DOCTYPE html>
@@ -36,18 +37,18 @@ if (strlen($_SESSION['imsaid']==0)) {
 
 <ul class="quick-actions">
 
-<?php $query2=mysqli_query($con,"Select * from tblcategory where Status='1'");
+<?php $query2=mysqli_query($con,"Select * from tblcategory");
 $catcount=mysqli_num_rows($query2);
 ?>      
         <li class="bg_ly"> <a href="manage-category.php"> <i class="icon-list fa-3x"></i>
           <span class="label label-success" style="margin-top:7%"><?php echo $catcount;?></span>&nbsp;Categories</a></li>
 
-<?php $query3=mysqli_query($con,"Select * from tblsubcategory where Status='1'");
+<?php $query3=mysqli_query($con,"Select * from tblsubcategory");
 $subcatcount=mysqli_num_rows($query3);
 ?>
         <li class="bg_lo"> <a href="manage-subcategory.php">  <i class="icon-th"></i> <span class="label label--success" style="margin-top:7%"><?php echo $subcatcount;?></span>&nbsp;Subcategories</a> </li>
 
-          <?php $query1=mysqli_query($con,"Select * from tblbrand where Status='1'");
+          <?php $query1=mysqli_query($con,"Select * from tblbrand");
 $brandcount=mysqli_num_rows($query1);
 ?>
         <li class="bg_lb"> <a href="manage-brand.php"><i class="fa fa-building-o fa-3x"></i><br /> 
@@ -79,26 +80,28 @@ $totuser=mysqli_num_rows($query5);
 
 <?php
 //todays sale
- $query6=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.Price
+$todaysale=0;
+ $query6=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.SellingPrice
  from tblcart 
   join tblproducts  on tblproducts.ID=tblcart.ProductId where date(CartDate)=CURDATE() and IsCheckOut='1'");
 while($row=mysqli_fetch_array($query6))
 {
-$todays_sale=$row['ProductQty']*$row['Price'];
-$todysale+=$todays_sale;
+$todays_sale=$row['ProductQty']*$row['SellingPrice'];
+$todaysale+=$todays_sale;
 }
  ?>
     
-<li class="bg_lh"><font style="font-size:22px; font-weight:bold">&#8358;</font><strong><?php echo number_format($todysale,2);?></strong> <small>Today's Sales</small></li>
+<li class="bg_lh"><font style="font-size:22px; font-weight:bold">&#8358;</font><strong><?php echo number_format($todaysale,2);?></strong> <small>Today's Sales</small></li>
 
 <?php
 //Yesterday's sale
- $query7=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.Price
+$yesterdaysale=0;
+ $query7=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.SellingPrice
  from tblcart 
   join tblproducts  on tblproducts.ID=tblcart.ProductId where date(CartDate)=CURDATE()-1 and IsCheckOut='1'");
 while($row=mysqli_fetch_array($query7))
 {
-$yesterdays_sale=$row['ProductQty']*$row['Price'];
+$yesterdays_sale=$row['ProductQty']*$row['SellingPrice'];
 $yesterdaysale+=$yesterdays_sale;
 
 }
@@ -107,25 +110,27 @@ $yesterdaysale+=$yesterdays_sale;
                 <li class="bg_lh"><font style="font-size:22px; font-weight:bold">&#8358;</font> <strong><?php echo number_format($yesterdaysale,2);?></strong> <small>Yesterday's Sales </small></li>
 
             <?php
+$tseven=0;
 //Last Seven Days Sale
- $query8=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.Price
+ $query8=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.SellingPrice
  from tblcart 
   join tblproducts  on tblproducts.ID=tblcart.ProductId where date(tblcart.CartDate)>=(DATE(NOW()) - INTERVAL 7 DAY) and tblcart.IsCheckOut='1' ");
 while($row=mysqli_fetch_array($query8))
 {
-$sevendays_sale=$row['ProductQty']*$row['Price'];
+$sevendays_sale=$row['ProductQty']*$row['SellingPrice'];
 $tseven+=$sevendays_sale;
 }
  ?>
                 <li class="bg_lh"><font style="font-size:22px; font-weight:bold">&#8358;</font> <strong><?php echo number_format($tseven,2);?></strong> <small>Seven Days' Sales</small></li>
             <?php
+$totalsale=0;
 //Total Sale
- $query9=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.Price
+ $query9=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.SellingPrice
  from tblcart 
   join tblproducts  on tblproducts.ID=tblcart.ProductId where  IsCheckOut='1' ");
 while($row=mysqli_fetch_array($query9))
 {
-$total_sale=$row['ProductQty']*$row['Price'];
+$total_sale=$row['ProductQty']*$row['SellingPrice'];
 $totalsale+=$total_sale;
 }
  ?>

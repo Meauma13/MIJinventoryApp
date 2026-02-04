@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -55,18 +55,17 @@ while ($row=mysqli_fetch_array($ret)) {
 ?>
 
                 <tr class="gradeX">
-                  <td><?php echo $cnt;?></td>
-                  <td><?php  echo $row['CategoryName'];?></td>
-                  <?php if($row['Status']=="1"){ ?>
+                  <td style="text-align: center;"><?php echo $cnt;?></td>
+                  <td style="text-align: center;"><?php  echo $row['CategoryName'];?></td>
+                  <?php if($row['CategoryCode']=="1"){ ?>
 
-                     <td><?php echo "Active"; ?></td>
-<?php } else { ?>    <td><?php echo "Inactive"; ?>
+                     <td style="text-align: center;"><?php echo "Active"; ?></td>
+<?php } else { ?>    <td style="text-align: center;"><?php echo "Inactive"; ?>
                   </td>
                   <?php } ?>
 
-                  
-                  <td><?php  echo $row['CreationDate'];?></td>
-                  <td class="center"><a href="editcategory.php?editid=<?php echo $row['ID'];?>"><i class=" icon-edit"></i></a></td>
+                  <td style="text-align: center;"><?php echo $row['PostingDate'];?></td>
+                  <td class="center" style="text-align: center;"><a href="editcategory.php?editid=<?php echo $row['ID'];?>"><i class=" icon-edit"></i></a></td>
                 </tr>
                 <?php 
 $cnt=$cnt+1;

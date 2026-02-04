@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -10,43 +10,42 @@ if (strlen($_SESSION['imsaid']==0)) {
     $pname=$_POST['pname'];
     $category=$_POST['category'];
     $subcategory=$_POST['subcategory'];
-    $bname=$_POST['bname'];
-    $modelno=$_POST['modelno'];
     $stock=$_POST['stock'];
-     $price=$_POST['price'];
+    $price=$_POST['price'];
     $status=$_POST['status'];
     $barcode=$_POST['barcode'];
      
-    $query=mysqli_query($con, "insert into tblproducts(ProductName,CatID,SubcatID,BrandName,ModelNumber,Stock,Price,Status,Barcode) value('$pname','$category','$subcategory','$bname','$modelno','$stock','$price','$status','$barcode')");
+    $query=mysqli_query($con, "insert into tblproducts(ProductName,CategoryID,SubcategoryID,Stock,SellingPrice,Status,Barcode) value('$pname','$category','$subcategory','$stock','$price','$status','$barcode')");
     if ($query) {
     $last_id = mysqli_insert_id($con);
-    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblproducts', '$last_id')");
+    mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'CREATE', 'tblproducts', '$last_id')");
    
     echo '<script>alert("Product has been created.")</script>';
   }
   else
     {
      echo '<script>alert("Something Went Wrong. Please try again")</script>';
-    }
-
-  
+    } 
 }
   ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| Add Products</title>
+<title>Inventory Management System || Add Products</title>
 <?php include_once('includes/cs.php');?>
 <script>
-function getSubCat(val) {
+  function getSubCat(val) {
   $.ajax({
-type:"POST",
-url:"get-subcat.php",
-data:'catid='+val,
-success:function(data){
-$("#subcategory").html(data);
-}
-
+    type: "POST",
+    url: "get-subcat.php",
+    data: { catid: val }, // Using object syntax is safer
+    success: function(data) {
+      $("#subcategory").html(data);
+    },
+    error: function() {
+      alert("Error loading subcategories.");
+    }
   });
 }
 </script>
@@ -82,45 +81,27 @@ $("#subcategory").html(data);
             <div class="control-group">
               <label class="control-label">Category :</label>
               <div class="controls">
-                <select type="text" class="span11" name="category" id="category" onChange="getSubCat(this.value)" value="" required='true' />
-                   <option value="">Select Category</option>
-                    <?php $query=mysqli_query($con,"select * from tblcategory where Status='1'");
-              while($row=mysqli_fetch_array($query))
-              {
-              ?>      
-                  <option value="<?php echo $row['ID'];?>"><?php echo $row['CategoryName'];?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Sub Category Name: :</label>
-              <div class="controls">
-                <select type="text" class="span11" name="subcategory" id="subcategory" value="" required='true' />
-                  <option value="">Select Sub Category</option>
-                </select>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Brand Name: :</label>
-              <div class="controls">
-                <select type="text" class="span11" name="bname" id="bname" />
-                  <option value="Not Applicable">Not Applicable</option>
-                  <option value="">Select Brand</option>
-                  <?php $query1=mysqli_query($con,"select * from tblbrand where Status='1'");
-              while($row1=mysqli_fetch_array($query1))
-              {
-              ?>
-                  <option value="<?php echo $row1['BrandName'];?>"><?php echo $row1['BrandName'];?></option><?php } ?>
-                </select>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label">Model Number :</label>
-              <div class="controls">
-                <input type="text" class="span11"  name="modelno" id="modelno" value="" required="true" maxlength="5" placeholder="Enter Model Number" />
-              </div>
-            </div>
+
+
+  <select class="span11" name="category" id="category" onChange="getSubCat(this.value)" required="true">
+    <option value="">Select Category</option>
+    <?php 
+    $query = mysqli_query($con, "select * from tblcategory where CategoryCode='1'");
+    while($row = mysqli_fetch_array($query)) { ?>      
+      <option value="<?php echo $row['ID'];?>"><?php echo $row['CategoryName'];?></option>
+    <?php } ?>
+  </select>
+</div>
+
+<div class="control-group">
+  <label class="control-label">Sub Category Name:</label>
+  <div class="controls">
+    <select class="span11" name="subcategory" id="subcategory" required="true">
+      <option value="">Select Sub Category</option>
+    </select>
+  </div>
+</div>
+
             <div class="control-group">
               <label class="control-label">Stock(units) :</label>
               <div class="controls">
