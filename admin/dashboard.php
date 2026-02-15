@@ -43,17 +43,6 @@ $catcount=mysqli_num_rows($query2);
         <li class="bg_ly"> <a href="manage-category.php"> <i class="icon-list fa-3x"></i>
           <span class="label label-success" style="margin-top:7%"><?php echo $catcount;?></span>&nbsp;Categories</a></li>
 
-<?php $query3=mysqli_query($con,"Select * from tblsubcategory");
-$subcatcount=mysqli_num_rows($query3);
-?>
-        <li class="bg_lo"> <a href="manage-subcategory.php">  <i class="icon-th"></i> <span class="label label--success" style="margin-top:7%"><?php echo $subcatcount;?></span>&nbsp;Subcategories</a> </li>
-
-          <?php $query1=mysqli_query($con,"Select * from tblbrand");
-$brandcount=mysqli_num_rows($query1);
-?>
-        <li class="bg_lb"> <a href="manage-brand.php"><i class="fa fa-building-o fa-3x"></i><br /> 
-         <span class="label label-important" style="margin-top:5%"><?php echo $brandcount;?></span>&nbsp;Brands</a></li>
-         
 <?php $query4=mysqli_query($con,"Select * from tblproducts");
 $productcount=mysqli_num_rows($query4);
 ?>
@@ -83,7 +72,7 @@ $totuser=mysqli_num_rows($query5);
 $todaysale=0;
  $query6=mysqli_query($con,"select tblcart.ProductQty as ProductQty,tblproducts.SellingPrice
  from tblcart 
-  join tblproducts  on tblproducts.ID=tblcart.ProductId where date(CartDate)=CURDATE() and IsCheckOut='1'");
+  join tblproducts on tblproducts.ID=tblcart.ProductId where date(CartDate)=CURDATE() and IsCheckOut='1'");
 while($row=mysqli_fetch_array($query6))
 {
 $todays_sale=$row['ProductQty']*$row['SellingPrice'];

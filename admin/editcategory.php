@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -12,15 +12,15 @@ if (strlen($_SESSION['imsaid']==0)) {
       $eid = $_GET['editid'];
 
       // Check for existing subcategories
-      $subcat_check = mysqli_query($con, "SELECT * FROM tblsubcategory WHERE CatID = '$eid'");
+      /* $subcat_check = mysqli_query($con, "SELECT * FROM tblsubcategory WHERE CatID = '$eid'");
       if (mysqli_num_rows($subcat_check) > 0) {
         echo '<script>alert("Cannot delete category: Subcategories exist under this category.")</script>';
         echo "<script>window.location.href='manage-category.php'</script>";
         exit;
-      }
+      } */
 
       // Check for existing products
-      $prod_check = mysqli_query($con, "SELECT * FROM tblproducts WHERE CatID = '$eid'");
+      $prod_check = mysqli_query($con, "SELECT * FROM tblproducts WHERE CategoryID = '$eid'");
       if (mysqli_num_rows($prod_check) > 0) {
         echo '<script>alert("Cannot delete category: Products exist under this category.")</script>';
         echo "<script>window.location.href='manage-category.php'</script>";
@@ -48,9 +48,9 @@ if (strlen($_SESSION['imsaid']==0)) {
       $eid = $_GET['editid'];
       $category = $_POST['category'];
       $status = $_POST['status'];
-      $query = mysqli_query($con, "UPDATE tblcategory SET CategoryName='$category', Status='$status' WHERE ID='$eid'");
+      $query = mysqli_query($con, "UPDATE tblcategory SET CategoryName='$category', CategoryCode='$status' WHERE ID='$eid'");
       if ($query) {
-        mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, TableName, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblcategory', '$eid')");
+        mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblcategory', '$eid')");
         echo '<script>alert("Category has been updated.")</script>';
         header('location:manage-category.php');
       } else {
@@ -118,7 +118,7 @@ while ($row=mysqli_fetch_array($ret)) {
             <div class="control-group">
               <label class="control-label">Status :</label>
               <div class="controls">
-                <?php  if($row['Status']=="1"){ ?>
+                <?php  if($row['CategoryCode']=="1"){ ?>
                 <input type="checkbox"  name="status" id="status" value="1"  checked="true"/>
                 <?php } else { ?>
                   <input type="checkbox" value='1' name="status" id="status" />
@@ -128,8 +128,9 @@ while ($row=mysqli_fetch_array($ret)) {
             
            <?php } ?>
             <div class="form-actions">
-              <button type="submit" class="btn btn-success" name="submit" style = "margin-left: 100px">Update</button>
-              <button type="submit" class="btn btn-danger" name="delete" style = "margin-left: 400px">Delete</button>
+              <button type="submit" class="btn btn-success span3" name="submit">Update</button>
+              <a href="manage-category.php" id="cancel" name="cancel" class="btn btn-info span3">Cancel</a>
+              <button type="submit" class="btn btn-danger span3" name="delete">Delete</button>
             </div>
           </form>
         </div>

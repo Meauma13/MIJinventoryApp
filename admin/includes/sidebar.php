@@ -2,7 +2,7 @@
 <div id="sidebar">
   <ul>
     <li class="active"><a href="dashboard.php"><i class="icon icon-home"></i> <span>Dashboard</span></a> </li>
-    <li><a href="ceo-dashboard.php"><i class="icon icon-dashboard"></i> <span>CEO Dashboard</span></a> </li>
+    <!-- <li><a href="ceo-dashboard.php"><i class="icon icon-dashboard"></i> <span>CEO Dashboard</span></a> </li> -->
     <li class="submenu"> <a href="#"><i class="icon icon-th-list"></i> <span>Category</span></a>
       <ul>
        
@@ -10,13 +10,13 @@
         <li><a href="manage-category.php">Manage Category</a></li>
       </ul>
     </li>
-    <li class="submenu"> <a href="#"><i class="icon icon-inbox"></i> <span>Sub Category</span></a>
+    <!-- <li class="submenu"> <a href="#"><i class="icon icon-inbox"></i> <span>Sub Category</span></a>
       <ul>
        
         <li><a href="add-subcategory.php">Add Sub Category</a></li>
         <li><a href="manage-subcategory.php">Manage Sub Category</a></li>
       </ul>
-    </li>
+    </li> -->
     <!-- <li class="submenu"> <a href="#"><i class="icon icon-file"></i> <span>Brand</span></a>
       <ul>
         <li><a href="add-brand.php">Add Brand</a></li>

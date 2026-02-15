@@ -40,8 +40,8 @@ if (strlen($_SESSION['imsaid']==0)) {
                 <tr>
                   <th>S.NO</th>
                   <th>Category Name</th>
+                  <th>Number of Products</th>
                   <th>Status</th>
-                  <th>Creation Date</th>
                   <th>Action</th> 
                 </tr>
               </thead>
@@ -49,7 +49,7 @@ if (strlen($_SESSION['imsaid']==0)) {
               <tbody>
 
                 <?php
-$ret=mysqli_query($con,"select * from tblcategory");
+$ret=mysqli_query($con,"select tblcategory.ID as catID, CategoryName, count(*) as product_count, CategoryCode from tblcategory left join tblproducts on tblcategory.ID = tblproducts.CategoryID group by CategoryName order by CategoryName");
 $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
 ?>
@@ -57,6 +57,7 @@ while ($row=mysqli_fetch_array($ret)) {
                 <tr class="gradeX">
                   <td style="text-align: center;"><?php echo $cnt;?></td>
                   <td style="text-align: center;"><?php  echo $row['CategoryName'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['product_count'];?></td>
                   <?php if($row['CategoryCode']=="1"){ ?>
 
                      <td style="text-align: center;"><?php echo "Active"; ?></td>
@@ -64,8 +65,9 @@ while ($row=mysqli_fetch_array($ret)) {
                   </td>
                   <?php } ?>
 
-                  <td style="text-align: center;"><?php echo $row['PostingDate'];?></td>
-                  <td class="center" style="text-align: center;"><a href="editcategory.php?editid=<?php echo $row['ID'];?>"><i class=" icon-edit"></i></a></td>
+                  <!-- <td style="text-align: center;"><?php // echo $row['PostingDate'];?></td> -->
+                  
+                  <td class="center" style="text-align: center;"><a href="editcategory.php?editid=<?php echo $row['catID'];?>"><i class=" icon-edit"></i></a></td>
                 </tr>
                 <?php 
 $cnt=$cnt+1;

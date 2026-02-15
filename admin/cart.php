@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -39,14 +39,13 @@ echo '<script>alert("Invoice created successfully. Billing number is "+"'.$billi
 echo "<script>window.location.href='invoice.php'</script>";
 
 }
-  
 }
 
   ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| Cart</title>
+<title>Inventory Management System || Cart</title>
 <?php include_once('includes/cs.php');?>
 </head>
 <body>
@@ -107,11 +106,9 @@ echo "<script>window.location.href='invoice.php'</script>";
                   <th style="font-size: 12px">S.NO</th>
                   <th style="font-size: 12px">Product Name</th>
                   <th style="font-size: 12px">Category Name</th>
-                   <th style="font-size: 12px">SubCategory Name</th>
-                  <th style="font-size: 12px">Brand Name</th>
-                  <th style="font-size: 12px">Model Number</th>
                   <th style="font-size: 12px">Quantity</th>
-                  <th style="font-size: 12px">Price(per unit)</th>
+                  <th style="font-size: 12px">Cost Price (per unit)</th>
+                  <th style="font-size: 12px">Selling Price (per unit)</th>
                   <th style="font-size: 12px">Total</th>
                   <th style="font-size: 12px">Action</th>
                 </tr>
@@ -119,7 +116,7 @@ echo "<script>window.location.href='invoice.php'</script>";
               <tbody>
               
                 <?php
-$ret=mysqli_query($con,"select tblcategory.CategoryName,tblsubcategory.SubCategoryname as subcat,tblproducts.ProductName,tblproducts.BrandName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.ModelNumber,tblproducts.Stock,tblproducts.Price,tblcart.ProductQty,tblcart.ID as cid from tblproducts join tblcategory on tblcategory.ID=tblproducts.CatID join tblsubcategory on tblsubcategory.ID=tblproducts.SubcatID left join tblcart  on tblproducts.ID=tblcart.ProductId where tblcart.IsCheckOut='0' group by tblproducts.ProductName");
+$ret=mysqli_query($con,"select tblcategory.CategoryName,tblproducts.ProductName,tblproducts.ID as pid,tblproducts.Status,tblproducts.Stock,tblproducts.CostPrice,tblproducts.SellingPrice,tblcart.ProductQty,tblcart.ID as cid from tblproducts join tblcategory on tblcategory.ID=tblproducts.CategoryID left join tblcart on tblproducts.ID=tblcart.ProductId where tblcart.IsCheckOut='0' group by tblproducts.ProductName");
 $cnt=1;
 $num=mysqli_num_rows($ret);
 if($num>0){
@@ -132,15 +129,15 @@ while ($row=mysqli_fetch_array($ret)) {
                   <td><?php echo $cnt;?></td>
                   <td><?php  echo $row['ProductName'];?></td>
                   <td><?php  echo $row['CategoryName'];?></td>
-                  <td><?php  echo $row['subcat'];?></td>
-                  <td><?php  echo $row['BrandName'] ?: 'Not Applicable';?></td>
-                  <td><?php  echo $row['ModelNumber'];?></td>
                   <td><?php  echo($pq= $row['ProductQty']);?></td>
-                  <td><?php  echo ($ppu=$row['Price']);?></td>
-                   <td><?php  echo($total=$pq*$ppu);?></td> 
+                  <td><?php  echo ($ppu=$row['CostPrice']);?></td>
+                  <td><?php  echo ($ppu=$row['SellingPrice']);?></td>
+                  <td><?php  echo($total=$pq*$ppu);?></td> 
  <td><a href="cart.php?delid=<?php echo $row['cid'];?>" onclick="return confirm('Do you really want to Delete ?');"><i class="icon-trash"></i></a></td>
-                </tr>
-                <?php 
+                
+              </tr>
+              
+              <?php 
 $cnt=$cnt+1;
 $gtotal+=$total;
 }?>

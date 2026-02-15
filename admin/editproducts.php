@@ -25,13 +25,13 @@ if (strlen($_SESSION['imsaid']==0)) {
     $eid=$_GET['editid'];
     $pname=$_POST['pname'];
     $category=$_POST['category'];
-    $subcategory=$_POST['subcategory'];
     $stock=$_POST['stock'];
-    $price=$_POST['price'];
+    $costprice=$_POST['costprice'];
+    $sellingprice=$_POST['sellingprice'];
     $status=$_POST['status'];
 
      
-    $query=mysqli_query($con, "update tblproducts set ProductName='$pname',CategoryID='$category',SubcategoryID='$subcategory',Stock='$stock',SellingPrice='$price',Status='$status' where ID='$eid'");
+    $query=mysqli_query($con, "update tblproducts set ProductName='$pname',CategoryID='$category',Stock='$stock',CostPrice='$costprice',SellingPrice='$sellingprice',Status='$status' where ID='$eid'");
     if ($query) {
     mysqli_query($con, "INSERT INTO tblauditlog (UserID, Action, Details, RecordID) VALUES ('".$_SESSION['imsaid']."', 'UPDATE', 'tblproducts', '$eid')");
    
@@ -66,7 +66,7 @@ echo "<script>
 <title>Inventory Management System || Update Products</title>
 <?php include_once('includes/cs.php');?>
 <script>
-function getSubCat(val) {
+/* function getSubCat(val) {
   $.ajax({
 type:"POST",
 url:"get-subcat.php",
@@ -74,10 +74,8 @@ data:'catid='+val,
 success:function(data){
 $("#subcategory").html(data);
 }
-
   });
-
-} 
+} */
   </script>
 </head>
 <body>
@@ -104,7 +102,7 @@ $("#subcategory").html(data);
           <form method="post" class="form-horizontal">
             <?php
             $eid=$_GET['editid'];
-$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as catid,tblsubcategory.Subcategoryname as subcat,tblsubcategory.ID as scatid,tblproducts.ID as pid,tblproducts.ProductName,tblproducts.Status,tblproducts.SellingPrice,tblproducts.Stock from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID where tblproducts.ID='$eid'");
+$ret=mysqli_query($con,"select tblcategory.CategoryName as catname,tblcategory.ID as catid,tblproducts.ID as pid,tblproducts.ProductName,tblproducts.Status,tblproducts.CostPrice,tblproducts.SellingPrice,tblproducts.Stock from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID where tblproducts.ID='$eid'");
 
 $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
@@ -130,25 +128,32 @@ while ($row=mysqli_fetch_array($ret)) {
                 </select>
               </div>
             </div>
-            <div class="control-group">
+
+            <!-- <div class="control-group">
               <label class="control-label">Sub Category Name: :</label>
               <div class="controls">
                 <select type="text" class="span11" name="subcategory" id="subcategory" value="" required='true' />
-                  <option value="<?php echo $row['scatid'];?>"><?php echo $row['subcat'];?></option>
+                  <option value="<?php // echo $row['scatid'];?>"><?php // echo $row['subcat'];?></option>
                 </select>
               </div>
-            </div>
+            </div> -->
           
             <div class="control-group">
-              <label class="control-label">Stock(units) :</label>
+              <label class="control-label">Stock :</label>
               <div class="controls">
                 <input type="text" class="span11"  name="stock" id="stock" value="<?php echo $row['Stock'];?>" required="true"/>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label">Price(perunits) :</label>
+              <label class="control-label">Cost Price :</label>
               <div class="controls">
-                <input type="text" class="span11" name="price" id="price" value="<?php echo $row['SellingPrice'];?>" required="true"/>
+                <input type="text" class="span11" name="costprice" id="price" value="<?php echo $row['CostPrice'];?>" required="true"/>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label">Selling Price :</label>
+              <div class="controls">
+                <input type="text" class="span11" name="sellingprice" id="price" value="<?php echo $row['SellingPrice'];?>" required="true"/>
               </div>
             </div>
             <div class="control-group">
@@ -163,8 +168,9 @@ while ($row=mysqli_fetch_array($ret)) {
             </div>         
            <?php } ?>
             <div class="form-actions">
-              <button type="submit" class="btn btn-success" name="submit">Update</button>
-              <button type="submit" class="btn btn-danger" name="delete" style="margin-left: 400px">Delete</button>
+              <button type="submit" class="btn btn-success span3" name="submit">Update</button>
+              <a href="manage-product.php" id="cancel" name="cancel" class="btn btn-info span3">Cancel</a>
+              <button type="submit" class="btn btn-danger span3" name="delete">Delete</button>
             </div>
           </form>
         </div>

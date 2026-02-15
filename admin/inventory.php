@@ -40,7 +40,6 @@ if (strlen($_SESSION['imsaid']==0)) {
                   <th>S.NO</th>
                   <th>Product Name</th>
                   <th>Category Name</th>
-                  <th>SubCategory Name</th>
                   <th>Stock</th>
                   <th>Remaining Stock</th>
                   <th>Status</th>
@@ -48,8 +47,8 @@ if (strlen($_SESSION['imsaid']==0)) {
               </thead>
               <tbody>
                 <?php
-$ret=mysqli_query($con,"select tblcategory.CategoryName,tblsubcategory.SubCategoryname as subcat,tblproducts.ProductName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,sum(tblcart.ProductQty) as selledqty from tblproducts join tblcategory on tblcategory.ID=tblproducts.CategoryID join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID left join tblcart on tblproducts.ID=tblcart.ProductId group by tblproducts.ProductName");
-$qty=$result['selledqty'];
+$ret=mysqli_query($con,"select tblcategory.CategoryName,tblproducts.ProductName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,sum(tblcart.ProductQty) as selledqty from tblproducts join tblcategory on tblcategory.ID=tblproducts.CategoryID left join tblcart on tblproducts.ID=tblcart.ProductId group by tblproducts.ProductName");
+//$qty=$result['selledqty'];
 $num=mysqli_num_rows($ret);
 if($num>0){
 $cnt=1;
@@ -60,13 +59,12 @@ $qty=$row['selledqty'];
                   <td><?php echo $cnt;?></td>
                   <td><?php  echo $row['ProductName'];?></td>
                   <td><?php  echo $row['CategoryName'];?></td>
-                  <td><?php  echo $row['subcat'];?></td>
-                  <td><?php  echo $row['Stock'];?></td>
-                   <td><?php  echo ($_SESSION['rqty']=$row['Stock']-$qty);?></td>
+                  <td style="text-align: center;"><?php  echo $row['Stock'];?></td>
+                  <td style="text-align: center;"><?php  echo ($_SESSION['rqty']=$row['Stock']-$qty);?></td>
                   <?php if($row['Status']=="1"){ ?>
 
-                     <td><?php echo "Active"; ?></td>
-<?php } else { ?>                  <td><?php echo "Inactive"; ?>
+                     <td style="text-align: center;"><?php echo "Active"; ?></td>
+<?php } else { ?>                  <td style="text-align: center;"><?php echo "Inactive"; ?>
                   </td>
                   <?php } ?>
                                   

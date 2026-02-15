@@ -1,6 +1,6 @@
 <?php
 session_start();
-error_reporting(0);
+error_reporting(E_ALL);
 include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
@@ -41,7 +41,7 @@ if (strlen($_SESSION['imsaid']==0)) {
                   <th>S.NO</th>
                   <th>Product Name</th>
                   <th>Category Name</th>
-                  <th>SubCategory Name</th>
+                  <th>Cost Price</th>
                   <th>Selling Price</th>
                   <th>Stock</th>
                   <th>Barcode</th>
@@ -53,7 +53,7 @@ if (strlen($_SESSION['imsaid']==0)) {
               </thead>
               <tbody>
                 <?php
-$ret=mysqli_query($con,"select ProductName, tblcategory.CategoryName,tblsubcategory.Subcategoryname,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,tblproducts.SellingPrice,tblproducts.Barcode from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID inner join tblsubcategory on tblsubcategory.ID=tblproducts.SubcategoryID");
+$ret=mysqli_query($con,"select ProductName, tblcategory.CategoryName,tblproducts.ID as pid,tblproducts.Status,tblproducts.CreationDate,tblproducts.Stock,tblproducts.CostPrice,tblproducts.SellingPrice,tblproducts.Barcode from tblproducts inner join tblcategory on tblcategory.ID=tblproducts.CategoryID order by tblproducts.ProductName ASC");
 
 $cnt=1;
 while ($row=mysqli_fetch_array($ret)) {
@@ -63,7 +63,7 @@ while ($row=mysqli_fetch_array($ret)) {
                   <td style="text-align: center;"><?php echo $cnt;?></td>
                   <td style="text-align: center;"><?php  echo $row['ProductName'];?></td>
                   <td style="text-align: center;"><?php  echo $row['CategoryName'];?></td>
-                  <td style="text-align: center;"><?php  echo $row['Subcategoryname'];?></td>
+                  <td style="text-align: center;"><?php  echo $row['CostPrice'];?></td>
                   <td style="text-align: center;"><?php  echo $row['SellingPrice'];?></td>
                   <td style="text-align: center;"><?php  echo $row['Stock'];?></td>
                   <td style="text-align: center;"><?php  echo $row['Barcode'] ? $row['Barcode'] : 'N/A';?></td>
