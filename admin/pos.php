@@ -10,6 +10,7 @@ if (strlen($_SESSION['imsaid']==0)) {
 if(isset($_POST['add_product'])){
   $barcode = $_POST['barcode'];
   $product_query = mysqli_query($con, "SELECT * FROM tblproducts WHERE Barcode='$barcode' AND Status='1'");
+  echo '<script>console.log("Scanned Barcode: '.$barcode.'");</script>';
   if(mysqli_num_rows($product_query) > 0){
     $product = mysqli_fetch_array($product_query);
     // Add to session cart
@@ -34,8 +35,8 @@ if(isset($_POST['add_product'])){
 
 // Handle manual add
 if(isset($_POST['manual_add'])){
-  $pid = $_POST['product_id'];
-  $qty = $_POST['qty'];
+  $pid = (int)$_POST['product_id'];
+  $qty = (int)$_POST['qty'];
   $product_query = mysqli_query($con, "SELECT * FROM tblproducts WHERE ID='$pid' AND Status='1'");
   $product = mysqli_fetch_array($product_query);
   if(!isset($_SESSION['pos_cart'])){
@@ -59,40 +60,54 @@ if(isset($_GET['remove'])){
   header('location:pos.php');
 }
 
-// Checkout
+
+  // Optimized Checkout with Transaction Support
 if(isset($_POST['checkout'])){
-  // Similar to cart.php, but for pos_cart
   $billiningnum = mt_rand(100000000, 999999999);
-  $customername = $_POST['customername'] ?: 'Walk-in';
-  $mobilenumber = $_POST['mobilenumber'] ?: '';
-  $modepayment = $_POST['modepayment'];
+  $customername = mysqli_real_escape_string($con, $_POST['customername'] ?: 'Walk-in');
+  $mobilenumber = mysqli_real_escape_string($con, $_POST['mobilenumber'] ?: '');
+  $modepayment = mysqli_real_escape_string($con, $_POST['modepayment']);
+  
+  // 1. Start Transaction
+  mysqli_begin_transaction($con);
 
-  // Insert into tblcart for each item
-  foreach($_SESSION['pos_cart'] as $pid => $item){
-    mysqli_query($con, "INSERT INTO tblcart (ProductId, ProductQty, IsCheckOut, CartDate) VALUES ('$pid', '".$item['qty']."', '0', NOW())");
+  try {
+    foreach($_SESSION['pos_cart'] as $pid => $item){
+      $qty = $item['qty'];
+
+      // 2. Efficient Stock Check: Ensure we don't sell what we don't have
+      $stock_check = mysqli_query($con, "SELECT Stock FROM tblproducts WHERE ID='$pid' FOR UPDATE");
+      $current_stock = mysqli_fetch_array($stock_check)['Stock'];
+
+      if($current_stock < $qty) {
+        throw new Exception("Insufficient stock for: " . $item['name']);
+      }
+
+      // 3. Insert into tblcart
+      mysqli_query($con, "INSERT INTO tblcart (ProductId, ProductQty, BillingId, IsCheckOut, CartDate) 
+                          VALUES ('$pid', '$qty', '$billiningnum', '1', NOW())");
+
+      // 4. Update Stock
+      mysqli_query($con, "UPDATE tblproducts SET Stock = Stock - $qty WHERE ID='$pid'");
+    }
+
+    // 5. Insert Customer Record
+    mysqli_query($con, "INSERT INTO tblcustomer (BillingNumber, CustomerName, MobileNumber, ModeofPayment) 
+                        VALUES ('$billiningnum', '$customername', '$mobilenumber', '$modepayment')");
+
+    // 6. If everything reached here without error, Commit to Database
+    mysqli_commit($con);
+
+    $_SESSION['invoiceid'] = $billiningnum;
+    unset($_SESSION['pos_cart']);
+    echo "<script>alert('Sale Completed Successfully!'); window.location.href='invoice.php';</script>";
+
+  } catch (Exception $e) {
+    // 7. If ANY error occurred, undo everything
+    mysqli_rollback($con);
+    $error_msg = $e->getMessage();
+    echo "<script>alert('Error: $error_msg');</script>";
   }
-
-  // Mark as checked out
-  $cart_ids = array();
-  foreach($_SESSION['pos_cart'] as $pid => $item){
-    $cart_query = mysqli_query($con, "SELECT ID FROM tblcart WHERE ProductId='$pid' AND IsCheckOut='0' ORDER BY ID DESC LIMIT 1");
-    $cart = mysqli_fetch_array($cart_query);
-    $cart_ids[] = $cart['ID'];
-  }
-  $cart_id_str = implode(',', $cart_ids);
-  mysqli_query($con, "UPDATE tblcart SET BillingId='$billiningnum', IsCheckOut=1 WHERE ID IN ($cart_id_str)");
-
-  // Insert customer
-  mysqli_query($con, "INSERT INTO tblcustomer (BillingNumber, CustomerName, MobileNumber, ModeofPayment) VALUES ('$billiningnum', '$customername', '$mobilenumber', '$modepayment')");
-
-  // Update stock
-  foreach($_SESSION['pos_cart'] as $pid => $item){
-    mysqli_query($con, "UPDATE tblproducts SET Stock = Stock - ".$item['qty']." WHERE ID='$pid'");
-  }
-
-  $_SESSION['invoiceid'] = $billiningnum;
-  unset($_SESSION['pos_cart']);
-  echo "<script>window.location.href='invoice.php'</script>";
 }
 
 ?>
@@ -127,7 +142,7 @@ if(isset($_POST['checkout'])){
             <div class="control-group">
               <label class="control-label">Scanned Barcode:</label>
               <div class="controls">
-                <input type="text" id="barcode_input" name="barcode" class="span11" readonly />
+                <input type="text" id="barcode_input" name="barcode" class="span11" readonly required/>
               </div>
             </div>
             <div class="form-actions">
@@ -148,7 +163,7 @@ if(isset($_POST['checkout'])){
                 <select name="product_id" class="span11" required>
                   <option value="">Select Product</option>
                   <?php
-                  $prod_query = mysqli_query($con, "SELECT ID, ProductName FROM tblproducts WHERE Status='1'");
+                  $prod_query = mysqli_query($con, "SELECT ID, ProductName FROM tblproducts WHERE Status='1' ORDER BY ProductName ASC");
                   while($prod = mysqli_fetch_array($prod_query)) {
                     echo "<option value='".$prod['ID']."'>".$prod['ProductName']."</option>";
                   }
@@ -272,10 +287,22 @@ Quagga.init({
   Quagga.start();
 });
 
+
+var isScanning = false;
 Quagga.onDetected(function(result) {
+  if (isScanning) return; // Prevent multiple scans at once
+  
+  isScanning = true;
   var code = result.codeResult.code;
   document.getElementById('barcode_input').value = code;
+  
+  // Auto-click the Add button
+  document.querySelector("button[name='add_product']").click();
+
+  // Wait 2 seconds before allowing the next scan
+  setTimeout(function() { isScanning = false; }, 2000);
 });
+
 </script>
 
 </body>

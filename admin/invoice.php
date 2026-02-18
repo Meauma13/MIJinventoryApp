@@ -5,15 +5,40 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['imsaid']==0)) {
   header('location:logout.php');
   } else{
-
-
-
   ?>
+  
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Inventory Management System|| Invoice</title>
+<title>Inventory Management System || Invoice</title>
 <?php include_once('includes/cs.php');?>
+
+<style>
+  /* This class hides elements ONLY when printing */
+@media print {
+    .no-print, 
+    #sidebar, 
+    #header, 
+    .btn, 
+    .footer-part {
+        display: none !important;
+    }
+
+    /* Expand the main content to fill the page */
+    #content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Optional: Force white background to save ink */
+    body {
+        background: white !important;
+        color: black !important;
+    }
+}
+</style>
+
 <script type="text/javascript">
 
 function print1(strid)
@@ -123,6 +148,14 @@ $gtotal+=$total;
                 </tr>
               </tbody>
             </table>
+            
+            <!-- The .no-print class ensures the button itself doesn't appear on the paper -->
+<div class="text-right no-print" style="margin-bottom: 10px;">
+    <button onclick="window.print();" class="btn btn-info">
+        <i class="icon-print"></i> Print Report
+    </button>
+</div>
+
              <p style="text-align: center; padding-top: 30px"><input type="button"  name="printbutton" value="Print" onclick="return print1('print2')"/></p>
 
           </div>
